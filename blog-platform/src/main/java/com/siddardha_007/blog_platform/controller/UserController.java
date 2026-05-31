@@ -4,6 +4,7 @@ import com.siddardha_007.blog_platform.dto.UserResponseDto;
 import com.siddardha_007.blog_platform.dto.UserUpdateDto;
 import com.siddardha_007.blog_platform.repository.UserRepository;
 import com.siddardha_007.blog_platform.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserResponseDto> updateUsername(@RequestBody UserUpdateDto userUpdateDto){
+    public ResponseEntity<UserResponseDto> updateUsername(@Valid @RequestBody UserUpdateDto userUpdateDto){
         UserResponseDto user = userService.updateUsername(userUpdateDto);
         return new ResponseEntity<>(user,HttpStatus.CREATED);
     }

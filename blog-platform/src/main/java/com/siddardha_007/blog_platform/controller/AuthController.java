@@ -4,6 +4,7 @@ import com.siddardha_007.blog_platform.dto.AuthResponseDto;
 import com.siddardha_007.blog_platform.dto.LoginRequestDto;
 import com.siddardha_007.blog_platform.dto.RegisterRequestDto;
 import com.siddardha_007.blog_platform.security.service.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequestDto){
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequestDto registerRequestDto){
         return new ResponseEntity<>(authenticationService.register(registerRequestDto), HttpStatus.OK);
     }
 
