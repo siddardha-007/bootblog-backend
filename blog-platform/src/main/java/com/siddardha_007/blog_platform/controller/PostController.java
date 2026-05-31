@@ -18,8 +18,18 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/posts")
-    public ResponseEntity<PostsDto> getAllPosts(){
-        PostsDto posts = postService.getAllPosts();
+    public ResponseEntity<PageResponseDto<PostResponseDto>> getAllPosts(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "5") int pageSize,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ){
+        PageResponseDto<PostResponseDto> posts = postService.getAllPosts(
+                pageNumber,
+                pageSize,
+                sortBy,
+                sortDir
+        );
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
@@ -30,11 +40,21 @@ public class PostController {
     }
 
     @GetMapping("/categories/{categoryId}/posts")
-    public ResponseEntity<PostsDto> getPostsByCategory(
-            @PathVariable Long categoryId
+    public ResponseEntity<PageResponseDto<PostResponseDto>> getPostsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "5") int pageSize,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
     ){
-        PostsDto posts =
-                postService.getPostsByCategory(categoryId);
+        PageResponseDto<PostResponseDto> posts =
+                postService.getPostsByCategory(
+                        categoryId,
+                        pageNumber,
+                        pageSize,
+                        sortBy,
+                        sortDir
+                );
 
         return ResponseEntity.ok(posts);
     }

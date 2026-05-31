@@ -1,9 +1,6 @@
 package com.siddardha_007.blog_platform.service;
 
-import com.siddardha_007.blog_platform.dto.CommentResponseDto;
-import com.siddardha_007.blog_platform.dto.PostRequestDto;
-import com.siddardha_007.blog_platform.dto.PostResponseDto;
-import com.siddardha_007.blog_platform.dto.PostsDto;
+import com.siddardha_007.blog_platform.dto.*;
 import com.siddardha_007.blog_platform.exceptions.BadRequestException;
 import com.siddardha_007.blog_platform.exceptions.ResourceNotFoundException;
 import com.siddardha_007.blog_platform.model.*;
@@ -12,6 +9,10 @@ import com.siddardha_007.blog_platform.repository.PostRepository;
 import com.siddardha_007.blog_platform.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,17 +37,33 @@ public class PostServiceImpl implements PostService{
 
 
     @Override
-    public PostsDto getAllPosts() {
-        List<Post>  posts = postRepository.findAll();
-        if(posts.isEmpty()){
-            throw new ResourceNotFoundException("Posts are empty");
-        }
-        List<PostResponseDto> postResponseDtos = posts.stream()
+    public PageResponseDto getAllPosts(
+            int pageNumber,
+            int pageSize,
+            String sortBy,
+            String sortDir
+    ) {
+
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+
+        Page<Post> posts = postRepository.findAll(pageable);
+
+        List<PostResponseDto> postResponseDtos = posts.getContent().stream()
                 .map(this::mapToPostResponseDto)
                 .toList();
-        PostsDto postsDto = new PostsDto();
-        postsDto.setPosts(postResponseDtos);
-        return postsDto;
+
+        PageResponseDto<PostResponseDto> pageResponseDto = new PageResponseDto<>();
+        pageResponseDto.setPosts(postResponseDtos);
+        pageResponseDto.setPageNumber(posts.getNumber());
+        pageResponseDto.setPageSize(posts.getSize());
+        pageResponseDto.setTotalElements(posts.getTotalElements());
+        pageResponseDto.setTotalPages(posts.getTotalPages());
+        pageResponseDto.setLast(posts.isLast());
+        return pageResponseDto;
     }
 
     @Override
@@ -58,17 +75,39 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostsDto getPostsByCategory(Long categoryId) {
+    public PageResponseDto<PostResponseDto> getPostsByCategory(
+            Long categoryId,
+            int pageNumber,
+            int pageSize,
+            String sortBy,
+            String sortDir
+    ) {
+
+
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(()->new ResourceNotFoundException("Category with id "+categoryId+" is not found"));
-        List<Post> posts = postRepository.findByCategory(category);
 
-        List<PostResponseDto> postResponseDtos = posts.stream()
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+
+        Page<Post> posts = postRepository.findByCategory(category,pageable);
+
+
+        List<PostResponseDto> postDtos = posts.getContent()
+                .stream()
                 .map(this::mapToPostResponseDto)
                 .toList();
-        PostsDto postsDto = new PostsDto();
-        postsDto.setPosts(postResponseDtos);
-        return postsDto;
+        PageResponseDto<PostResponseDto> response = new PageResponseDto<>();
+
+        response.setPosts(postDtos);
+        response.setPageNumber(posts.getNumber());
+        response.setPageSize(posts.getSize());
+        response.setTotalElements(posts.getTotalElements());
+        response.setTotalPages(posts.getTotalPages());
+        response.setLast(posts.isLast());
+        return response;
     }
 
     @Override
