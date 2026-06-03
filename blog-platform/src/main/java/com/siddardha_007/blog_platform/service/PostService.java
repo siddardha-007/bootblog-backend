@@ -33,4 +33,5 @@ public interface PostService {
 
     String deletePost(Long postId);
 
+    PostsDto getPostsByMe();
 }

@@ -18,17 +18,7 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initAdmin(){
         return args -> {
-            if(!userRepository.existsByEmail("admin0123456789@gmail.com")){
-                User admin = new User();
-                admin.setEmail("admin0123456789@gmail.com");
-                admin.setUsername("ADMIN");
-                admin.setPassword(
-                        passwordEncoder.encode("admin9876543210")
-                );
-                admin.setRole(Role.ROLE_ADMIN);
 
-                userRepository.save(admin);
-            }
         };
     }
 }

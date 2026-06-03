@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +38,7 @@ public class PostServiceImpl implements PostService{
 
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDto getAllPosts(
             int pageNumber,
             int pageSize,
@@ -67,6 +69,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PostResponseDto getPostById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(()->new ResourceNotFoundException("Post is not found"));
@@ -75,6 +78,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponseDto<PostResponseDto> getPostsByCategory(
             Long categoryId,
             int pageNumber,
@@ -111,6 +115,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PostsDto getPostsByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new ResourceNotFoundException("User with id "+userId+" is not found"));
@@ -125,6 +130,21 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public PostsDto getPostsByMe() {
+        User user = getUser();
+        List<Post> posts = postRepository.findByUser(user);
+
+        List<PostResponseDto> postResponseDtos = posts.stream()
+                .map(this::mapToPostResponseDto)
+                .toList();
+        PostsDto postsDto = new PostsDto();
+        postsDto.setPosts(postResponseDtos);
+        return postsDto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public PostsDto getPostBySearch(String keyword) {
         List<Post> posts = postRepository.findByTitleContainingIgnoreCase(keyword);
 
@@ -141,6 +161,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional
     public PostResponseDto createPost(PostRequestDto postRequestDto) {
         Post post = new Post();
         post.setTitle(postRequestDto.getTitle());
@@ -159,6 +180,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional
     public PostResponseDto updatePost(Long postId, PostRequestDto postRequestDto) {
         User loggedInUser = getUser();
 
@@ -183,6 +205,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional
     public String deletePost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(()->new ResourceNotFoundException("Post with id "+postId+" is not found"));
@@ -196,6 +219,8 @@ public class PostServiceImpl implements PostService{
         postRepository.delete(post);
         return "Post is Deleted Successfully";
     }
+
+
 
 
     //These are HELPER methods !!!!

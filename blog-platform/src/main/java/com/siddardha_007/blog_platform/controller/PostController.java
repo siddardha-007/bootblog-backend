@@ -68,6 +68,15 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+
+    @GetMapping("/users/me/posts")
+    public ResponseEntity<PostsDto> getPostsByMe(){
+        PostsDto posts =
+                postService.getPostsByMe();
+        return ResponseEntity.ok(posts);
+    }
+
+
     @GetMapping("/posts/search")
     public ResponseEntity<PostsDto> getPostBySearch(
             @RequestParam String keyword

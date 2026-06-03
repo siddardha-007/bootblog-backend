@@ -8,6 +8,7 @@ import com.siddardha_007.blog_platform.model.Role;
 import com.siddardha_007.blog_platform.model.User;
 import com.siddardha_007.blog_platform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.dialect.LobMergeStrategy;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -63,7 +64,10 @@ public class AuthenticationService {
 
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponseDto(token);
+        Long userId = userDetails.getUserId();
+        String email = userDetails.getUsername();
+
+        return new AuthResponseDto(token, userId, email);
     }
 
 }
