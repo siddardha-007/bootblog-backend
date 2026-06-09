@@ -57,7 +57,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of("http://localhost:5173",
-                "https://bootblog-frontend-9c26kf4of-siddardhabvs.vercel.app"));
+                "https://bootblog-frontend-9c26kf4of-siddardhabvs.vercel.app",
+                "https://bootblog-frontend.vercel.app"));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
