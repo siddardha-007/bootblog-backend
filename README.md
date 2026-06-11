@@ -2,7 +2,7 @@
 
 A secure, high-concurrency, containerized blogging ecosystem featuring a robust **Spring Boot REST API** and a dynamic **React.js creator dashboard**. The platform implements stateless JWT authentication with strict Role-Based Access Control (RBAC) to separate standard user interactions from administrative moderation engines.
 
-🔗 **Live Frontend Application:** [View Live Deployment on Vercel](https://your-vercel-frontend-link.vercel.app)  
+🔗 **Live Frontend Application:** [View Live Deployment on Vercel](https://bootblog-frontend.vercel.app)  
 🔗 **Live Backend API Base:** `https://bootblog-backend.onrender.com`
 
 ---
